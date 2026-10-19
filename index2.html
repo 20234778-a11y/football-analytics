@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Football Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #0b132b;
+      color: #ffffff;
+      min-height: 100vh;
+      padding: 20px 16px 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 12px 4px 6px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 255, 135, 0.12);
+      border: 1px solid rgba(0, 255, 135, 0.3);
+      color: #00ff87;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      margin-bottom: 10px;
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background-color: #00ff87;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #00ff87;
+    }
+    h1 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+    h1 span {
+      color: #00ff87;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    /* Cards KPI */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .kpi-card {
+      background: #1c2541;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 14px 10px;
+      text-align: center;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+    .kpi-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #00ff87;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Section Card Base */
+    .section-card {
+      background: #1c2541;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 18px 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 8px;
+    }
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 14px;
+      background: #00ff87;
+      border-radius: 2px;
+    }
+    .section-tag {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    /* Chart */
+    .chart-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .bar-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .bar-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 13px;
+    }
+    .team-name {
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .team-goals {
+      font-weight: 700;
+      color: #00ff87;
+    }
+    .bar-track {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, #00b4d8 0%, #00ff87 100%);
+      transition: width 0.4s ease;
+    }
+
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      padding: 8px 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    th.text-center, td.text-center {
+      text-align: center;
+    }
+    th.text-right, td.text-right {
+      text-align: right;
+    }
+    td {
+      padding: 10px 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #f1f5f9;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .pos-num {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #cbd5e1;
+    }
+    tr:first-child .pos-num {
+      background: rgba(0, 255, 135, 0.2);
+      color: #00ff87;
+      border: 1px solid rgba(0, 255, 135, 0.4);
+    }
+    .goals-badge {
+      display: inline-block;
+      background: rgba(0, 255, 135, 0.12);
+      color: #00ff87;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    /* Action button & Modal / Alert Box */
+    .action-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 4px;
+    }
+    .btn-stats {
+      width: 100%;
+      background: #00ff87;
+      color: #0b132b;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(0, 255, 135, 0.35);
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    .btn-stats:active {
+      transform: scale(0.98);
+      background-color: #00e575;
+    }
+    .message-box {
+      display: none;
+      background: rgba(0, 255, 135, 0.12);
+      border: 1px solid #00ff87;
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #ffffff;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .message-box.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    .message-box strong {
+      color: #00ff87;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 11px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Temporada 2024 / 2025
+      </div>
+      <h1>Football <span>Analytics</span></h1>
+      <p class="subtitle">Estadísticas de la Premier League</p>
+    </header>
+
+    <!-- Indicadores -->
+    <section class="kpi-grid" aria-label="Indicadores clave">
+      <div class="kpi-card">
+        <div class="kpi-value">20</div>
+        <div class="kpi-label">Partidos</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">48</div>
+        <div class="kpi-label">Goles</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">14</div>
+        <div class="kpi-label">Victorias</div>
+      </div>
+    </section>
+
+    <!-- Gráfico de barras -->
+    <section class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">Comparativa de Goles</h2>
+        <span class="section-tag">Top 4</span>
+      </div>
+      <div class="chart-container">
+        <!-- Arsenal: 48 (100% base) -->
+        <div class="bar-item">
+          <div class="bar-meta">
+            <span class="team-name">Arsenal</span>
+            <span class="team-goals">48 goles</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 100%;"></div>
+          </div>
+        </div>
+        <!-- Liverpool: 44 (91.6%) -->
+        <div class="bar-item">
+          <div class="bar-meta">
+            <span class="team-name">Liverpool</span>
+            <span class="team-goals">44 goles</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 91.6%;"></div>
+          </div>
+        </div>
+        <!-- Manchester City: 42 (87.5%) -->
+        <div class="bar-item">
+          <div class="bar-meta">
+            <span class="team-name">Manchester City</span>
+            <span class="team-goals">42 goles</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 87.5%;"></div>
+          </div>
+        </div>
+        <!-- Chelsea: 35 (72.9%) -->
+        <div class="bar-item">
+          <div class="bar-meta">
+            <span class="team-name">Chelsea</span>
+            <span class="team-goals">35 goles</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 72.9%;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabla -->
+    <section class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">Tabla de Equipos</h2>
+        <span class="section-tag">Goles a favor</span>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 32px;" class="text-center">#</th>
+              <th>Equipo</th>
+              <th class="text-right">Goles</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-center"><span class="pos-num">1</span></td>
+              <td><strong>Arsenal</strong></td>
+              <td class="text-right"><span class="goals-badge">48</span></td>
+            </tr>
+            <tr>
+              <td class="text-center"><span class="pos-num">2</span></td>
+              <td><strong>Liverpool</strong></td>
+              <td class="text-right"><span class="goals-badge">44</span></td>
+            </tr>
+            <tr>
+              <td class="text-center"><span class="pos-num">3</span></td>
+              <td><strong>Manchester City</strong></td>
+              <td class="text-right"><span class="goals-badge">42</span></td>
+            </tr>
+            <tr>
+              <td class="text-center"><span class="pos-num">4</span></td>
+              <td><strong>Chelsea</strong></td>
+              <td class="text-right"><span class="goals-badge">35</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Botón & Mensaje interactivo -->
+    <section class="action-container">
+      <button id="btnStats" class="btn-stats" type="button">Ver estadísticas</button>
+      <div id="statsMessage" class="message-box" role="alert">
+        ⚽ <strong>Reporte de Rendimiento:</strong><br>
+        En las primeras <strong>20 jornadas</strong> disputadas, <strong>Arsenal</strong> lidera la producción ofensiva con <strong>48 goles</strong> marcados, manteniendo un promedio de <strong>2.4 goles por partido</strong> y sumando <strong>14 triunfos</strong>.
+      </div>
+    </section>
+
+    <footer>
+      Football Analytics &bull; Premier League Edition
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('btnStats').addEventListener('click', function() {
+      const box = document.getElementById('statsMessage');
+      if (box.classList.contains('active')) {
+        box.classList.remove('active');
+        this.textContent = 'Ver estadísticas';
+      } else {
+        box.classList.add('active');
+        this.textContent = 'Ocultar estadísticas';
+      }
+    });
+  </script>
+</body>
+</html>
